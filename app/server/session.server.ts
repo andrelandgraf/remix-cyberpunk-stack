@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { createCookieSessionStorage, redirect } from '@remix-run/cloudflare';
+import { createCookieSessionStorage, redirect } from '@remix-run/node';
 import { getPrivateEnvVars } from './env.server';
 
 import { db } from './db.server';

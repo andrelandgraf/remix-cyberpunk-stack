@@ -3,7 +3,9 @@
 /build
 /dist
 /public/build
-/.mf
+
+# Netlify
+/.netlify
 
 # Tailwind
 /app/styles/tailwind.css

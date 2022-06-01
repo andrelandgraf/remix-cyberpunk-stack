@@ -1,7 +1,7 @@
 import type { User } from '~/types';
-import type { MetaFunction, LinksFunction, LoaderFunction } from '@remix-run/cloudflare';
+import type { MetaFunction, LinksFunction, LoaderFunction } from '@remix-run/node';
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
-// import { getUser } from '~/utils/index.server';
+import { getUser } from '~/server/session.server';
 
 import styles from './styles/tailwind.css';
 
@@ -15,10 +15,10 @@ export const meta: MetaFunction = () => ({
 
 type LoaderData = { user: User | null };
 
-// export const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
-//   const user = await getUser(request);
-//   return { user };
-// };
+export const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
+  const user = await getUser(request);
+  return { user };
+};
 
 export default function App() {
   return (

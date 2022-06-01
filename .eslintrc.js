@@ -4,6 +4,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   extends: [
     '@remix-run/eslint-config',
+    '@remix-run/eslint-config/node',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
