@@ -4,6 +4,20 @@ import { getPrivateEnvVars } from './env.server';
 
 import { db } from './db.server';
 
+type SignupForm = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export async function register({ name, email, password }: SignupForm) {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = await db.user.create({
+    data: { name, email: email.toLowerCase(), password: passwordHash },
+  });
+  return { id: user.id, email, name };
+}
+
 type LoginForm = {
   email: string;
   password: string;

@@ -5,7 +5,14 @@ import { getUser } from '~/server/session.server';
 
 import styles from './styles/tailwind.css';
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: styles }];
+export const links: LinksFunction = () => {
+  return [
+    { rel: 'stylesheet', href: styles },
+    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Orbitron&display=swap' },
+  ];
+};
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',

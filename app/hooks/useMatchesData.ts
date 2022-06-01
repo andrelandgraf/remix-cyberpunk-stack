@@ -4,7 +4,7 @@ import { User } from '~/types';
 
 export function useMatchesData(key: string) {
   const routeModules = useMatches();
-  const route = routeModules.find((route) => route.data['key'] !== undefined);
+  const route = routeModules.find((route) => route.data[key] !== undefined);
   return route?.data[key];
 }
 
