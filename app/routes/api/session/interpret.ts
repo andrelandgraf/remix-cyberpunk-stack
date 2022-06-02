@@ -28,9 +28,6 @@ export const action: ActionFunction = async ({ request }): Promise<Response> => 
   const { query, redirectTo } = cmdFormData.data;
   try {
     const { dialogflow } = getPrivateEnvVars();
-    logUsage(`projectId: ${dialogflow.projectId}`);
-    logUsage(`privateKey: ${dialogflow.privateKey}`);
-    logUsage(`clientEmail: ${dialogflow.clientEmail}`);
     const dialogflowService = new DialogFlowService(
       dialogflow.projectId,
       dialogflow.privateKey,

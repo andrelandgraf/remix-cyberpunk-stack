@@ -58,7 +58,7 @@ export function getPrivateEnvVars(): PrivateEnvVars {
     sessionSecret,
     dialogflow: {
       projectId: dialogflowProjectId,
-      privateKey: dialogflowPrivateKey,
+      privateKey: publicVars.NODE_ENV === 'production' ? JSON.parse(dialogflowPrivateKey) : dialogflowPrivateKey,
       clientEmail: dialogflowClientEmail,
     },
     slack: {
