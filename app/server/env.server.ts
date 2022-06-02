@@ -8,6 +8,11 @@ type PublicEnvVars = {
 
 type PrivateEnvVars = PublicEnvVars & {
   sessionSecret: string;
+  dialogflow: {
+    projectId: string;
+    privateKey: string;
+    clientEmail: string;
+  };
 };
 
 function isNODE_ENV(value: string | undefined): value is NODE_ENVS {
@@ -25,9 +30,20 @@ export function getPublicEnvVars(): PublicEnvVars {
 export function getPrivateEnvVars(): PrivateEnvVars {
   const publicVars = getPublicEnvVars();
   const sessionSecret = process.env.SESSION_SECRET;
+  const dialogflowPrivateKey = process.env.DIALOGFLOW_PRIVATE_KEY;
+  const dialogflowClientEmail = process.env.DIALOGFLOW_CLIENT_EMAIL;
+  const dialogflowProjectId = process.env.DIALOGFLOW_PROJECT_ID;
   invariant(sessionSecret, 'SESSION_SECRET env variable must be set');
+  invariant(dialogflowPrivateKey, 'DIALOGFLOW_PRIVATE_KEY env variable must be set');
+  invariant(dialogflowClientEmail, 'DIALOGFLOW_CLIENT_EMAIL env variable must be set');
+  invariant(dialogflowProjectId, 'DIALOGFLOW_PROJECT_ID env variable must be set');
   return {
     ...publicVars,
     sessionSecret,
+    dialogflow: {
+      projectId: dialogflowProjectId,
+      privateKey: dialogflowPrivateKey,
+      clientEmail: dialogflowClientEmail,
+    },
   };
 }

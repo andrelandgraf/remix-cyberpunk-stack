@@ -151,6 +151,7 @@ export default function ProjectDetails() {
               type="text"
               id="name-input"
               name="name"
+              autoComplete="off"
               placeholder="Find replacement for Palladium"
               aria-invalid={Boolean(actionData?.form?.name?.error)}
               aria-errormessage={actionData?.form?.name?.error ? 'name-error' : undefined}

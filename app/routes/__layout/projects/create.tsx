@@ -93,6 +93,7 @@ export default function CreateProject() {
             type="text"
             id="name-input"
             name="name"
+            autoComplete="off"
             placeholder="Build Mach 3"
             aria-invalid={Boolean(actionData?.form?.name?.error)}
             aria-errormessage={actionData?.form?.name?.error ? 'name-error' : undefined}

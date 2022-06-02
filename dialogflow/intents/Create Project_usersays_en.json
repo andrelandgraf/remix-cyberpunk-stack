@@ -1,0 +1,67 @@
+[
+  {
+    "id": "4b8a17b7-21ef-4e9b-87af-0c62109dd2b2",
+    "data": [
+      {
+        "text": "set up project",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "87c0c12c-af4c-469d-b11a-1e010eea2266",
+    "data": [
+      {
+        "text": "let\u0027s set up a new project",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "8280a95e-0ca1-452e-88f3-a563915ec089",
+    "data": [
+      {
+        "text": "new project",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "eab77890-7ecc-4ecd-9a75-71be7cf91e74",
+    "data": [
+      {
+        "text": "create project",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "7168e3a7-a6ea-4bb8-8680-2c55cc03f578",
+    "data": [
+      {
+        "text": "create new project",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

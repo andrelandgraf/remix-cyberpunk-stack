@@ -1,0 +1,67 @@
+[
+  {
+    "id": "12fbc907-bfab-4aac-85b7-460a97d4da5e",
+    "data": [
+      {
+        "text": "new account",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "e5f620d6-c6bb-44e5-a3df-c035209b8d40",
+    "data": [
+      {
+        "text": "create account",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "11198474-ec9a-455a-bde8-4d4117f7633d",
+    "data": [
+      {
+        "text": "register",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "1e1f67f0-b9d3-427d-85a1-bd02d7df42e5",
+    "data": [
+      {
+        "text": "sign me up",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "4098c29d-b3e9-4998-92ef-ff1d85b0cac0",
+    "data": [
+      {
+        "text": "sign up",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

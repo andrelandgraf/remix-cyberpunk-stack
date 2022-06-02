@@ -20,6 +20,7 @@
     "start": "cross-env NODE_ENV=production netlify dev"
   },
   "dependencies": {
+    "@google-cloud/dialogflow": "^4.7.0",
     "@netlify/functions": "^1.0.0",
     "@prisma/client": "^3.14.0",
     "@remix-run/netlify": "^1.5.1",

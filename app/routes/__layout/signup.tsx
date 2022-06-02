@@ -103,13 +103,13 @@ export const action: ActionFunction = async ({ request }): Promise<ActionData | 
   }
 };
 
-export default function Login() {
+export default function Signup() {
   const actionData = useActionData();
   const transition = useTransition();
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <Form method="post" className="w-full md:max-w-sm flex flex-col gap-5 items-center justify-center">
-        <H2 className="text-center">Login</H2>
+        <H2 className="text-center">Signup</H2>
         {actionData?.form?.error && <ErrorText>{actionData.form.error}</ErrorText>}
         <div className="w-full">
           <label htmlFor="name-input">Name:</label>
