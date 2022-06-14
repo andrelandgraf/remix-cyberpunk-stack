@@ -9,15 +9,14 @@
     "format:db": "npx prisma format",
     "format:lint": "npx eslint --fix",
     "build": "run-s build:*",
-    "build:db": "PRISMA_CLIENT_ENGINE_TYPE='dataproxy' npx prisma generate",
+    "build:db": "npx prisma generate --data-proxy",
     "build:css": "npm run generate:css -- --minify",
     "build:remix": "remix build",
-    "deploy": "npm run build && npx wrangler publish",
-    "dev": "npm run build:remix && run-p dev:*",
+    "dev": "NODE_ENV=development npm run build:remix && run-p dev:*",
     "dev:css": "npm run generate:css -- --watch",
-    "dev:remix": "cross-env NODE_ENV=development netlify dev",
+    "dev:remix": "cross-env netlify dev",
     "generate:css": "npx tailwindcss -o ./app/styles/tailwind.css",
-    "start": "cross-env NODE_ENV=production netlify dev"
+    "start": "NODE_ENV=production cross-env netlify dev"
   },
   "dependencies": {
     "@google-cloud/dialogflow": "^4.7.0",
@@ -30,6 +29,7 @@
     "cross-env": "^7.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-markdown": "^8.0.3",
     "tiny-invariant": "^1.2.0",
     "zod": "^3.17.3"
   },
