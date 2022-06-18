@@ -2,8 +2,10 @@ import { MetaFunction, LinksFunction, LoaderFunction, json } from '@remix-run/no
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 import { getUser } from '~/server/session.server';
 import { getTrackingId } from '~/modules/event-tracking/session.server';
+import { PrefetchRecommendations } from './modules/action-recommender/prefetchRecommendations';
 
 import styles from './styles/tailwind.css';
+import { ActionsProvider } from './modules/action-recommender/actionsProvider';
 
 export const links: LinksFunction = () => {
   return [
@@ -34,11 +36,18 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
+        <ActionsProvider>
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+          <PrefetchRecommendations />
+        </ActionsProvider>
       </body>
     </html>
   );
+}
+
+function ProviderChildren() {
+  return <></>;
 }

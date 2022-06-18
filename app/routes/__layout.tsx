@@ -4,6 +4,7 @@ import { StyledNavLink, FormLink } from '~/UI/components/link';
 import { useUser } from '~/hooks/useMatchesData';
 import { CommandLine } from '~/modules/cmd-ctr-line/commandLine';
 import { useIntentHandler } from '~/modules/cmd-ctr-line/useIntentHandler';
+import { ActionsPicker } from '~/modules/action-recommender/actionsPicker';
 
 export default function Layout() {
   useIntentHandler();
@@ -50,7 +51,10 @@ export default function Layout() {
             </ul>
           </nav>
         </div>
-        <CommandLine className="m-auto max-w-md" />
+        <div className="m-auto max-w-xl flex flex-col gap-5">
+          <CommandLine />
+          <ActionsPicker />
+        </div>
       </header>
       <main className="pt-20">
         <Outlet />

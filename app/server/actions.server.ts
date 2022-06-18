@@ -1,4 +1,4 @@
-type Action = {
+export type Action = {
   intent: string;
   pathname: string;
   fulfillment?: {
@@ -8,7 +8,7 @@ type Action = {
   };
 };
 
-export enum Actions {
+export enum ActionIds {
   login = 'login',
   logout = 'logout',
   signup = 'signup',
@@ -19,7 +19,7 @@ export enum Actions {
   deleteTask = 'deleteTask',
 }
 
-export const actions: Record<Actions, Action> = {
+export const actions: Record<ActionIds, Action> = {
   login: {
     intent: 'Login',
     pathname: '/login',
@@ -83,5 +83,3 @@ export function matchByIntent(intent: string) {
   const action = Object.values(actions).find((a) => a.intent === intent);
   return action;
 }
-
-export function recommendNextAction(prevIntent: string, prevPrevIntent?: string) {}
