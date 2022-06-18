@@ -8,6 +8,7 @@ type PublicEnvVars = {
 
 type PrivateEnvVars = PublicEnvVars & {
   sessionSecret: string;
+  trackingSecret: string;
   dialogflow: {
     projectId: string;
     privateKey: string;
@@ -43,6 +44,8 @@ export function getPrivateEnvVars(): PrivateEnvVars {
   const publicVars = getPublicEnvVars();
   const sessionSecret = process.env.SESSION_SECRET;
   invariant(sessionSecret, 'SESSION_SECRET env variable must be set');
+  const trackingSecret = process.env.TRACKING_SECRET;
+  invariant(trackingSecret, 'TRACKING_SECRET env variable must be set');
   const dialogflowPrivateKey = process.env.DIALOGFLOW_PRIVATE_KEY;
   const dialogflowClientEmail = process.env.DIALOGFLOW_CLIENT_EMAIL;
   const dialogflowProjectId = process.env.DIALOGFLOW_PROJECT_ID;
@@ -56,6 +59,7 @@ export function getPrivateEnvVars(): PrivateEnvVars {
   return {
     ...publicVars,
     sessionSecret,
+    trackingSecret,
     dialogflow: {
       projectId: dialogflowProjectId,
       privateKey: publicVars.NODE_ENV === 'production' ? JSON.parse(dialogflowPrivateKey) : dialogflowPrivateKey,

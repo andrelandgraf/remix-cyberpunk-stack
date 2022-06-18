@@ -1,7 +1,7 @@
-import type { User } from '~/types';
-import type { MetaFunction, LinksFunction, LoaderFunction } from '@remix-run/node';
+import { MetaFunction, LinksFunction, LoaderFunction, json } from '@remix-run/node';
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react';
 import { getUser } from '~/server/session.server';
+import { getTrackingId } from '~/modules/event-tracking/session.server';
 
 import styles from './styles/tailwind.css';
 
@@ -20,11 +20,10 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1',
 });
 
-type LoaderData = { user: User | null };
-
-export const loader: LoaderFunction = async ({ request }): Promise<LoaderData> => {
+export const loader: LoaderFunction = async ({ request }): Promise<Response> => {
   const user = await getUser(request);
-  return { user };
+  const [, headers] = await getTrackingId(request);
+  return json({ user }, { headers });
 };
 
 export default function App() {

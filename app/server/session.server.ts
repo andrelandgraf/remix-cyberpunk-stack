@@ -62,18 +62,17 @@ export async function getUser(request: Request) {
       select: { id: true, email: true, name: true },
     });
     return user;
-  } catch {
+  } catch (error) {
+    console.error(error);
     throw logout(request);
   }
 }
 
-export async function logout(request: Request) {
+export async function logout(request: Request, headers: Headers | undefined = new Headers()) {
   const session = await getUserSession(request);
-  return redirect('/login', {
-    headers: {
-      'Set-Cookie': await storage.destroySession(session),
-    },
-  });
+  const headersValue = await storage.destroySession(session);
+  headers.set('Set-Cookie', headersValue);
+  return redirect('/login', { headers });
 }
 
 function getUserSession(request: Request) {
@@ -97,12 +96,14 @@ export async function requireUserId(request: Request, redirectTo: string = new U
   return userId;
 }
 
-export async function createUserSession(userId: string, redirectTo: string) {
+export async function createUserSession(
+  userId: string,
+  redirectTo: string,
+  headers: Headers | undefined = new Headers(),
+) {
   const session = await storage.getSession();
   session.set('userId', userId);
-  return redirect(redirectTo, {
-    headers: {
-      'Set-Cookie': await storage.commitSession(session),
-    },
-  });
+  const headersValue = await storage.commitSession(session);
+  headers.set('Set-Cookie', headersValue);
+  return redirect(redirectTo, { headers });
 }

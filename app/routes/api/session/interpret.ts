@@ -2,8 +2,8 @@ import { ActionFunction, redirect } from '@remix-run/node';
 import zod from 'zod';
 import { matchByIntent } from '~/server/actions.server';
 import { getPrivateEnvVars } from '~/server/env.server';
-import { DialogFlowService } from '~/server/services/dialogflow.server';
-import { sendSlackMessage } from '~/server/services/slack.server';
+import { DialogFlowService } from '~/modules/cmd-ctr-line/dialogflow.server';
+import { sendSlackMessage } from '~/modules/slack-notifications/slack.server';
 
 const CmdFormData = zod.object({
   query: zod.string(),
@@ -11,7 +11,6 @@ const CmdFormData = zod.object({
 });
 
 function logUsage(message: string) {
-  console.log(message);
   const { slack } = getPrivateEnvVars();
   if (slack.isEnabled) {
     sendSlackMessage(slack.webhook, message);
@@ -50,12 +49,12 @@ export const action: ActionFunction = async ({ request }): Promise<Response> => 
       return redirect(redirectTo);
     }
     logUsage(`Detected intent ${action.intent} for query ${query}`);
-    if (action.form) {
-      return redirect(action.form.route);
+    if (action.fulfillment && action.fulfillment.fulfill) {
+      return redirect(
+        `${redirectTo}?method=${action.fulfillment.method}&action=${encodeURIComponent(action.fulfillment.action)}`,
+      );
     }
-    return redirect(
-      `${redirectTo}?method=${action.fulfillment.method}&action=${encodeURIComponent(action.fulfillment.action)}`,
-    );
+    return redirect(action.pathname);
   } catch (error) {
     logUsage(`Dialog service failed for ${query} with error ${error}`);
     console.error(error);

@@ -1,10 +1,12 @@
 import zod from 'zod';
-import { ActionFunction, LoaderFunction, redirect } from '@remix-run/node';
+import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node';
 import { Form, useActionData, useTransition } from '@remix-run/react';
 import { Button } from '~/UI/components/buttons';
 import { H2 } from '~/UI/components/headings';
 import { ErrorText, Input } from '~/UI/components/input';
 import { createUserSession, getUser, register } from '~/server/session.server';
+import { actions } from '~/server/actions.server';
+import { getTrackingId, trackEvent } from '~/modules/event-tracking/session.server';
 
 const minPasswordSize = 8;
 const minNameSize = 3;
@@ -63,8 +65,14 @@ type ActionData = {
   };
 };
 
-function errorJson(error: string, nameError?: string, emailError?: string, passwordError?: string): ActionData {
-  return {
+function errorJson(
+  headers: Headers | undefined,
+  error: string,
+  nameError?: string,
+  emailError?: string,
+  passwordError?: string,
+): Response {
+  const data: ActionData = {
     form: {
       error,
       name: {
@@ -78,15 +86,19 @@ function errorJson(error: string, nameError?: string, emailError?: string, passw
       },
     },
   };
+  return json(data, { headers });
 }
 
 export const action: ActionFunction = async ({ request }): Promise<ActionData | Response> => {
+  const [trackingId, headers] = await getTrackingId(request);
+  trackEvent(trackingId, actions.signup.intent);
   try {
     const formData = await request.formData();
     const loginFormData = LoginFormData.safeParse(Object.fromEntries(formData));
     if (!loginFormData.success) {
       console.debug('LoginFormData.safeParse failed', loginFormData);
       return errorJson(
+        headers,
         'There are some errors. Please review all fields again.',
         loginFormData.error.formErrors.fieldErrors.name?.join(', '),
         loginFormData.error.formErrors.fieldErrors.email?.join(', '),
@@ -95,11 +107,11 @@ export const action: ActionFunction = async ({ request }): Promise<ActionData | 
     }
     const { email, password, name } = loginFormData.data;
     const signupData = await register({ email, name, password });
-    if (!signupData) return errorJson('User already exists');
-    return createUserSession(signupData.id, '/projects');
+    if (!signupData) return errorJson(headers, 'User already exists');
+    return createUserSession(signupData.id, '/projects', headers);
   } catch (error) {
-    console.log(error);
-    return errorJson('Something went wrong, please try again.');
+    console.error(error);
+    return errorJson(headers, 'Something went wrong, please try again.');
   }
 };
 

@@ -1,5 +1,5 @@
 import zod from 'zod';
-import { ActionFunction, LoaderFunction, redirect } from '@remix-run/node';
+import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node';
 import { Form, useActionData, useTransition } from '@remix-run/react';
 import { Button } from '~/UI/components/buttons';
 import { H2 } from '~/UI/components/headings';
@@ -7,6 +7,8 @@ import { ErrorText, Input } from '~/UI/components/input';
 import { requireUserId } from '~/server/session.server';
 import { db } from '~/server/db.server';
 import { useRequiredUser } from '~/hooks/useMatchesData';
+import { getTrackingId, trackEvent } from '~/modules/event-tracking/session.server';
+import { actions } from '~/server/actions.server';
 
 const minProjectNameSize = 3;
 const maxProjectNameSize = 255;
@@ -39,8 +41,8 @@ type ActionData = {
   };
 };
 
-function errorJson(error: string, nameError?: string): ActionData {
-  return {
+function errorJson(headers: Headers | undefined, error: string, nameError?: string): Response {
+  const data: ActionData = {
     form: {
       error,
       name: {
@@ -48,32 +50,36 @@ function errorJson(error: string, nameError?: string): ActionData {
       },
     },
   };
+  return json(data, { headers });
 }
 
 export const action: ActionFunction = async ({ request }): Promise<ActionData | Response> => {
+  const [trackingId, headers] = await getTrackingId(request);
   try {
     const reqClone = await request.clone();
     const userId = await requireUserId(reqClone);
+    trackEvent(trackingId, actions.createProject.intent);
     const formData = await request.formData();
     const loginFormData = ProjectFormData.safeParse(Object.fromEntries(formData));
     if (!loginFormData.success) {
       console.debug('ProjectFormData.safeParse failed', loginFormData);
       return errorJson(
+        headers,
         'There are some errors. Please review all fields again.',
         loginFormData.error.formErrors.fieldErrors.name?.join(', '),
       );
     }
     const { name, userId: formUserId } = loginFormData.data;
     if (userId !== formUserId) {
-      return errorJson('You are not authorized to create this project.');
+      return errorJson(headers, 'You are not authorized to create this project.');
     }
     const project = await db.project.create({
       data: { name, userId },
     });
-    return redirect(`/projects/${project.id}`);
+    return redirect(`/projects/${project.id}`, { headers });
   } catch (error) {
-    console.log(error);
-    return errorJson('Something went wrong, please try again.');
+    console.error(error);
+    return errorJson(headers, 'Something went wrong, please try again.');
   }
 };
 

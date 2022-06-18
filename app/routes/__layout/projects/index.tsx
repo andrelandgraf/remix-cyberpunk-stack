@@ -1,6 +1,8 @@
 import { Project } from '@prisma/client';
-import { LoaderFunction } from '@remix-run/node';
+import { json, LoaderFunction } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { getTrackingId, trackEvent } from '~/modules/event-tracking/session.server';
+import { actions } from '~/server/actions.server';
 import { db } from '~/server/db.server';
 import { requireUserId } from '~/server/session.server';
 import { ButtonLink } from '~/UI/components/buttons';
@@ -13,10 +15,12 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await requireUserId(request);
+  const [trackingId, headers] = await getTrackingId(request);
+  trackEvent(trackingId, actions.viewProjects.intent);
   const projects = await db.project.findMany({
     where: { userId },
   });
-  return { projects };
+  return json({ projects }, { headers });
 };
 
 export default function Projects() {

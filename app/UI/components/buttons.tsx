@@ -1,7 +1,7 @@
 import { Link, LinkProps } from '@remix-run/react';
 import { ButtonHTMLAttributes } from 'react';
 import { getAriaClasses } from '../aria';
-import { SpinnerSvg } from '../icons/spinner';
+import { SpinnerSvg } from './icons/spinner';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   isPrimary?: boolean;

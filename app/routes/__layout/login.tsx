@@ -1,10 +1,12 @@
 import zod from 'zod';
-import { ActionFunction, LoaderFunction, redirect } from '@remix-run/node';
+import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node';
 import { Form, useActionData, useTransition } from '@remix-run/react';
 import { Button } from '~/UI/components/buttons';
 import { H2 } from '~/UI/components/headings';
 import { ErrorText, Input } from '~/UI/components/input';
 import { createUserSession, getUser, login } from '~/server/session.server';
+import { getTrackingId, trackEvent } from '~/modules/event-tracking/session.server';
+import { actions } from '~/server/actions.server';
 
 const LoginFormData = zod.object({
   email: zod
@@ -39,8 +41,8 @@ type ActionData = {
   };
 };
 
-function errorJson(error: string, emailError?: string, passwordError?: string): ActionData {
-  return {
+function errorJson(headers: Headers | undefined, error: string, emailError?: string, passwordError?: string) {
+  const data: ActionData = {
     form: {
       error,
       email: {
@@ -51,15 +53,19 @@ function errorJson(error: string, emailError?: string, passwordError?: string): 
       },
     },
   };
+  return json(data, { headers });
 }
 
 export const action: ActionFunction = async ({ request }): Promise<ActionData | Response> => {
+  const [trackingId, headers] = await getTrackingId(request);
+  trackEvent(trackingId, actions.login.intent);
   try {
     const formData = await request.formData();
     const loginFormData = LoginFormData.safeParse(Object.fromEntries(formData));
     if (!loginFormData.success) {
       console.debug('LoginFormData.safeParse failed', loginFormData);
       return errorJson(
+        headers,
         'There are some errors. Please review all fields again.',
         loginFormData.error.formErrors.fieldErrors.email?.join(', '),
         loginFormData.error.formErrors.fieldErrors.password?.join(', '),
@@ -67,11 +73,11 @@ export const action: ActionFunction = async ({ request }): Promise<ActionData | 
     }
     const { email, password } = loginFormData.data;
     const loginData = await login({ email, password });
-    if (!loginData) return errorJson('Invalid password or email. Please try again.');
-    return createUserSession(loginData.id, '/projects');
+    if (!loginData) return errorJson(headers, 'Invalid password or email. Please try again.');
+    return createUserSession(loginData.id, '/projects', headers);
   } catch (error) {
-    console.log(error);
-    return errorJson('Something went wrong, please try again.');
+    console.error(error);
+    return errorJson(headers, 'Something went wrong, please try again.');
   }
 };
 

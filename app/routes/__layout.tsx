@@ -2,8 +2,8 @@ import { Outlet } from '@remix-run/react';
 import { H1 } from '~/UI/components/headings';
 import { StyledNavLink, FormLink } from '~/UI/components/link';
 import { useUser } from '~/hooks/useMatchesData';
-import { CommandLine } from '~/features/commandLine';
-import { useIntentHandler } from '~/hooks/useIntentHandler';
+import { CommandLine } from '~/modules/cmd-ctr-line/commandLine';
+import { useIntentHandler } from '~/modules/cmd-ctr-line/useIntentHandler';
 
 export default function Layout() {
   useIntentHandler();

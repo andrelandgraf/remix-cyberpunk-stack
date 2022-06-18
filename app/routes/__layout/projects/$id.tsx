@@ -1,6 +1,6 @@
 import { Project, Task } from '@prisma/client';
 import zod from 'zod';
-import { ActionFunction, LoaderFunction, redirect } from '@remix-run/node';
+import { ActionFunction, json, LoaderFunction, redirect } from '@remix-run/node';
 import { Form, useActionData, useFetcher, useLoaderData, useTransition } from '@remix-run/react';
 import { db } from '~/server/db.server';
 import { requireUserId } from '~/server/session.server';
@@ -8,6 +8,8 @@ import { H2, H3 } from '~/UI/components/headings';
 import { ErrorText, Input } from '~/UI/components/input';
 import { Button } from '~/UI/components/buttons';
 import invariant from 'tiny-invariant';
+import { getTrackingId, trackEvent } from '~/modules/event-tracking/session.server';
+import { actions } from '~/server/actions.server';
 
 const minProjectNameSize = 3;
 const maxProjectNameSize = 255;
@@ -36,8 +38,8 @@ type ActionData = {
   };
 };
 
-function getActionData(error?: string, nameError?: string): ActionData {
-  return {
+function getActionData(headers: Headers | undefined, error?: string, nameError?: string): Response {
+  const data: ActionData = {
     form: {
       success: !error,
       error: error || null,
@@ -46,13 +48,15 @@ function getActionData(error?: string, nameError?: string): ActionData {
       },
     },
   };
+  return json(data, { headers });
 }
 
-async function handleCreateTask(formData: FormData) {
+async function handleCreateTask(formData: FormData, headers: Headers | undefined) {
   const loginFormData = TaskFormData.safeParse(Object.fromEntries(formData));
   if (!loginFormData.success) {
     console.debug('TaskFormData.safeParse failed', loginFormData);
     return getActionData(
+      headers,
       'There are some errors. Please review all fields again.',
       loginFormData.error.formErrors.fieldErrors.name?.join(', '),
     );
@@ -61,27 +65,30 @@ async function handleCreateTask(formData: FormData) {
   await db.task.create({
     data: { name, projectId },
   });
-  return getActionData();
+  return getActionData(headers);
 }
 
 export const action: ActionFunction = async ({ request }): Promise<ActionData | Response> => {
+  const [trackingId, headers] = await getTrackingId(request);
   try {
     const reqClone = await request.clone();
     await requireUserId(reqClone);
     const formData = await request.formData();
     if (formData.get('intent') === 'create') {
-      return handleCreateTask(formData);
+      trackEvent(trackingId, actions.createTask.intent);
+      return handleCreateTask(formData, headers);
     } else {
+      trackEvent(trackingId, actions.deleteTask.intent);
       const taskId = formData.get('taskId');
       invariant(typeof taskId === 'string', 'taskId must be a string');
       await db.task.delete({
         where: { id: taskId },
       });
-      return getActionData();
+      return getActionData(headers);
     }
   } catch (error) {
-    console.log(error);
-    return getActionData('Something went wrong, please try again.');
+    console.error(error);
+    return getActionData(headers, 'Something went wrong, please try again.');
   }
 };
 
@@ -92,6 +99,8 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request, params }): Promise<Response | LoaderData> => {
   const userId = await requireUserId(request);
+  const [trackingId, headers] = await getTrackingId(request);
+  trackEvent(trackingId, actions.viewProject.intent);
   const project = await db.project.findUnique({
     where: { id: params.id },
   });
@@ -131,7 +140,7 @@ export default function ProjectDetails() {
                         intent: 'delete',
                         taskId: task.id,
                       },
-                      { method: 'post' },
+                      { method: 'delete' },
                     )
                   }
                 />
